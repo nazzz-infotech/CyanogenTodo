@@ -1,0 +1,35 @@
+$primary_color: #4527a0; //Primary Color Variable
+$primary_color_container: #e7e0fa; //Primary Color Container Variable
+
+.main_div_create {
+  // main div
+  background-color: $primary_color;
+  height: 98vh;
+  width: 98vw;
+  display: grid;
+  place-items: center;
+  margin: 8px;
+  margin-right: 24px;
+}
+
+.create_panel {
+  // create panel
+  padding: 30px;
+  background-color: $primary_color_container;
+  border: 1.5px solid gray;
+  border-radius: 5px;
+  background-color: #ffffff;
+  max-width: 1200px;
+}
+
+.create_divider {
+  // create divider for Create Button
+  height: 16px;
+}
+
+.create_bg {
+  // create background div
+  width: 100%;
+  height: 100%;
+  background-color: $primary_color;
+}

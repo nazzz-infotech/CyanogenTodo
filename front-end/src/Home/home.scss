@@ -1,0 +1,29 @@
+.main_div { // main todo back panel
+  padding: 8px;
+  border-radius: 3px;
+  background-color: #4527a0;
+}
+
+.no_todos_div { // if no todo show it 
+  margin: 5px;
+  color: white;
+  padding: 10px;
+  border: 1.7px solid lightgrey;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.action_panel { // action panel [AccordionActions]
+  flex-direction: row-reverse;
+}
+
+.px5 { // 5px divider / spacer
+  width: 5px;
+}
+
+.fab_container { // fab container for all files 
+  position: fixed;
+  bottom: 16px; 
+  right: 15px; 
+  z-index: 1000; 
+}
