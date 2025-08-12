@@ -18,18 +18,3 @@
 ![Mobile_drawer_open](./front-end/public/mobile_1.png)
 
 ## It is Build for fast, simple, minimal and responsive design
-
-### Start It as development server
-```shell
-# Mongodb compass required
-# Npm required
-# python required
-# ------------------------------------------
-# First Start Back-end
-cd ./back-end
-./venv./scripts/activate
-py ./main.py
-# Then start front end from other terminal window
-cd ./front-end
-npm run dev
-```
