@@ -1,5 +1,5 @@
 # Cyanogen Todo
-#### A Todo Full-Stack Todo Application with React, Flask and MongoDB
+#### A Todo Full-Stack Todo Application with MERN Stack
 
 ![App Icon](./front-end/public/icon.png)
 
