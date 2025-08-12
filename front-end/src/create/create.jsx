@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   Fab,
   FormControlLabel,
   TextField,
@@ -14,6 +15,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
 
 // Create New Todo Page
 function Create() {
@@ -21,6 +26,8 @@ function Create() {
   const [title, setTitleValue] = useState(""); // Title
   const [content, setContentValue] = useState(""); // Content
   const [isBackToHome, setBackToHome] = useState(false); // is back to home after todo creation (not for adding to database)
+  const [isTimeAndDate, setTimeAndDate] = useState(false); // use the time and date if needed
+  const [pickerDateAndTime, setDateAndTime] = useState(dayjs()); // time (get the current time)
 
   //value handling functions
   const handleTitleChange = (event) => {
@@ -32,13 +39,25 @@ function Create() {
   const handleGoBackToHome = (event) => {
     setBackToHome(event.target.checked);
   };
+  const handleTimeAndDate = (event) => {
+    setTimeAndDate(event.target.checked);
+  };
 
   //route navigation without HTML
   const navigate = useNavigate();
 
   const createNewTodo = () => {
+    let time = "None";
+    let date = "None";
+    if (isTimeAndDate) {
+      time = pickerDateAndTime.format("hh:mm A");
+      console.log(`Selected time: ${time}`);
+
+      date = pickerDateAndTime.format("YYYY-MM-DD");
+      console.log(`Selected date: ${date}`);
+    }
     // main create function
-    createNew(title, content)
+    createNew(title, content, time, date)
       .then(() => {
         console.log("Todo Created !");
         toast.success("Todo Created Successfully !", {
@@ -100,10 +119,37 @@ function Create() {
         main: "#4527a0",
       },
       secondary: {
-        main: "#047c22ff",
+        main: "#075697ff",
       },
     },
   });
+
+  function returnDateTimePicker() {
+    if (isTimeAndDate) {
+      return (
+        <>
+          <div className="create_divider"></div> {/* Spacer / Divider */}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              disablePast
+              label="Pick Date and Time"
+              enableAccessibleFieldDOMStructure={false}
+              slots={{ textField: TextField }}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  variant: "outlined",
+                },
+              }}
+              value={pickerDateAndTime}
+              onChange={(newValue) => setDateAndTime(newValue)}
+            />
+          </LocalizationProvider>
+          <div className="create_divider"></div> {/* Spacer / Divider */}
+        </>
+      );
+    }
+  }
 
   return (
     <ThemeProvider theme={myTheme}>
@@ -148,11 +194,24 @@ function Create() {
                   id="fullWidth"
                   variant="outlined"
                   multiline
-                  maxRows={10}
+                  maxRows={isTimeAndDate ? 4 : 10}
                   value={content}
                   onChange={handleContentChange}
                 />
                 <div className="create_divider"></div> {/* Spacer / Divider */}
+                <Divider /> {/*MUI Divider*/}
+                <div className="create_divider"></div> {/* Spacer / Divider */}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isTimeAndDate}
+                      onChange={handleTimeAndDate}
+                      color="secondary"
+                    />
+                  }
+                  label="Use Date And Time"
+                />
+                {returnDateTimePicker()}
                 <hr />
                 {/* Go Back to home after todo creation checkbox */}
                 <FormControlLabel

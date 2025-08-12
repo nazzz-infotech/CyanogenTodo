@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "http://localhost:5000"; // Api url 
+const apiUrl = "http://localhost:5000"; // Api url
 
 // Create Test Item API call
 export const createTestItem = async () => {
@@ -38,9 +38,9 @@ export function getTodos() {
 }
 
 // Check / Uncheck the todo
-export const checkTodo = async (id) => {
+export const toggle = async (id) => {
   try {
-    const res = await axios.patch(`${apiUrl}/check/${id}`);
+    const res = await axios.patch(`${apiUrl}/toggle/${id}`);
     console.log(res.data);
   } catch (err) {
     console.error(err);
@@ -82,11 +82,13 @@ export const allUnCheck = async () => {
 };
 
 // create new todo
-export const createNew = async (title, content) => {
+export const createNew = async (title, content, time, date) => {
   try {
     const postData = {
       title: title,
       content: content === "" ? title : content,
+      date: date,
+      time: time,
     };
     const res = await axios.post(`${apiUrl}/new`, postData);
     console.log(res.data);
@@ -100,21 +102,23 @@ export const createNew = async (title, content) => {
 export const queryFormId = async (id) => {
   try {
     const res = await axios.get(`${apiUrl}/queryfromid/${id}`);
-    console.log(res.data.todo);
-    return res.data.todo;
+    console.log(res.data);
+    return res.data;
   } catch (err) {
     console.error(err);
     throw err;
   }
 };
 
-// update / edit todo 
-export const update = async (title, content, id) => {
+// update / edit todo
+export const update = async (id, title, content, time, date) => {
   try {
     const postData = {
+      _id: id,
       title: title,
       content: content === "" ? title : content,
-      id: id,
+      time: time,
+      date: date,
     };
     const res = await axios.put(`${apiUrl}/update`, postData);
     console.log(res.data);

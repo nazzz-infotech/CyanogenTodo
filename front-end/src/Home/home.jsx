@@ -23,6 +23,7 @@ import {
   Drawer,
   ListItemText,
   Divider,
+  Chip,
 } from "@mui/material";
 
 // Import Material-UI icons.
@@ -40,7 +41,7 @@ import {
   getTodos,
   createTestItem,
   dropDatabase,
-  checkTodo,
+  toggle,
   deleteTodo,
   allCheck,
   allUnCheck,
@@ -160,7 +161,7 @@ function Home() {
    * @param {string} id - The unique identifier of the todo to toggle.
    */
   const toggleTodoState = (id) => {
-    checkTodo(id)
+    toggle(id)
       .then(() => {
         fetchTodos();
         toast.success("Todo Status Updated Successfully", {
@@ -416,6 +417,32 @@ function Home() {
     );
   };
 
+  function getDateChipColor(date) {
+    let nowDate = new Date();
+    let formatted = nowDate.toISOString().split("T")[0]; // YYYY-MM-DD
+    console.log(formatted);
+
+    if (date < formatted) {
+      return "error"; // entered date is in the past
+    } else if (date === formatted) {
+      return "warning"; // entered date is today
+    } else {
+      return "success"; // entered date is in the future
+    }
+  }
+
+  function getDateTimeChips(time, date) {
+    if (time !== "None" && date !== "None") {
+      return (
+        <>
+          <Chip color={getDateChipColor(date)} label={date} />
+          <div className="px5" />
+          <Chip color={"primary"} label={time} />
+        </>
+      );
+    }
+  }
+
   // The main render method for the Home component.
   return (
     <ThemeProvider theme={theme}>
@@ -471,6 +498,8 @@ function Home() {
                     >
                       {todo.title}
                     </Typography>
+                    <div className="spacer" />
+                    {getDateTimeChips(todo.time, todo.date)}
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography component="div" variant="body1">
