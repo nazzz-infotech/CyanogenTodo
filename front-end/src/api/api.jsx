@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const apiUrl = "http://localhost:5000"; // Api url
+/**
+ * Use The apiUrl as your computer local IP address / forwarded address
+ */
+
+const apiUrl = "http://localhost:5000"; // Api url 
 
 // Create Test Item API call
 export const createTestItem = async () => {
@@ -126,4 +130,16 @@ export const update = async (id, title, content, time, date) => {
     console.error(err);
     throw err;
   }
+};
+
+export const subscribeToPush = async () => {
+  const registration = await navigator.serviceWorker.register("/sw.js");
+
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey:
+      "BDNqk1wTM9-O2pvknGjWoIBiHCzPtAgpP3I66ckaKg6hoUK4oaRrjtOxSsGjm2PYFXZIh6YplrxI6e3EguvIBSc",
+  });
+  await axios.post(`${apiUrl}/save-subscription`, subscription);
+  console.log("Subscribed!");
 };

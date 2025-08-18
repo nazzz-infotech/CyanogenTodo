@@ -1,0 +1,46 @@
+{
+  "short_name": "Cyanogen Todo",
+  "name": "Cyanogen Todo, Organize your task",
+  "icons": [
+    {
+      "src": "/app_icons/icon_192X192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/app_icons/icon_512X512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "id": "/",
+  "start_url": "/",
+  "background_color": "#163dbd",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#4527a0",
+  "shortcuts": [
+    {
+      "name": "Create A new todo",
+      "short_name": "New Todo",
+      "description": "Create a new todo with cyanogen todo",
+      "url": "/create",
+      "icons": [{ "src": "/shortcut_icons/create_new_todo.png", "sizes": "192x192" }]
+    }
+  ],
+  "description": "Cyanogen Todo, Organize your tasks.",
+  "screenshots": [
+    {
+      "src": "/screenshots/540x720.png",
+      "type": "image/png",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/720x540.png",
+      "type": "image/jpg",
+      "sizes": "720x540",
+      "form_factor": "wide"
+    }
+  ]
+}

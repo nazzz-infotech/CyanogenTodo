@@ -45,6 +45,7 @@ import {
   deleteTodo,
   allCheck,
   allUnCheck,
+  subscribeToPush,
 } from "../api/api";
 
 // Import components for showing toast notifications.
@@ -57,6 +58,7 @@ import { ThemeProvider } from "@emotion/react";
 
 // Import Link component from react-router-dom for navigation.
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 /**
  * @component Home
@@ -105,6 +107,27 @@ function Home() {
   const fetchTodos = () => {
     getTodos().then(setTodos);
   };
+
+  /**
+   * Subscribe The User for notification
+   */
+
+  //for time notification todo
+  useEffect(() => {
+    if ("Notification" in window && "serviceWorker" in navigator) {
+      Notification.requestPermission().then((permission) => {
+        console.log("Notification permission:", permission);
+        subscribeToPush();
+
+        // event listener for notification
+        addEventListener("load", async () => {
+          // register service worker
+          const sw = await navigator.serviceWorker.register("sw.js");
+          console.log(sw);
+        });
+      });
+    }
+  }, []);
 
   /**
    * Calls the API to mark all todo items as checked and then refreshes the list.
@@ -273,7 +296,7 @@ function Home() {
         main: "#4527a0", // Deep purple
       },
       secondary: {
-        main: "#660069ff", // Deep magenta
+        main: "#660069", // Deep magenta
       },
     },
   });
