@@ -1,1 +1,21 @@
-{}
+{
+  "name": "cyanogentodo",
+  "version": "1.0.0",
+  "description": "![App Icon](./front-end/public/icon.png)",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nazzz-infotech/CyanogenTodo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nazzz-infotech/CyanogenTodo/issues"
+  },
+  "homepage": "https://github.com/nazzz-infotech/CyanogenTodo#readme"
+}

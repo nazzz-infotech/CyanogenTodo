@@ -64,37 +64,36 @@ function Update() {
   }, [id]);
 
   const updateTodo = () => {
-  if (!pickerDateAndTime || !dayjs.isDayjs(pickerDateAndTime)) {
-    toast.error("Invalid date and time selected");
-    return;
-  }
+    if (!pickerDateAndTime || !dayjs.isDayjs(pickerDateAndTime)) {
+      toast.error("Invalid date and time selected");
+      return;
+    }
 
-  // Format for your backend (if needed)
-  const date = pickerDateAndTime.format("YYYY-MM-DD");
-  const time = pickerDateAndTime.format("hh:mm A"); // hh:mm for 12-hour + AM/PM
+    // Format for your backend (if needed)
+    const date = pickerDateAndTime.format("YYYY-MM-DD");
+    const time = pickerDateAndTime.format("hh:mm A"); // hh:mm for 12-hour + AM/PM
 
-  console.log(`Date: ${date}, Time: ${time}`); // Example: Date: 08/12/2025, Time: 08:04 PM
+    console.log(`Date: ${date}, Time: ${time}`); // Example: Date: 08/12/2025, Time: 08:04 PM
 
-  update(id, title, content, time, date)
-    .then(() => {
-      toast.success("Todo Updated Successfully !", {
-        position: "bottom-right",
-        autoClose: 1200,
-        theme: "dark",
-        transition: Bounce,
+    update(id, title, content, time, date)
+      .then(() => {
+        toast.success("Todo Updated Successfully !", {
+          position: "bottom-right",
+          autoClose: 1200,
+          theme: "dark",
+          transition: Bounce,
+        });
+        navigate("/");
+      })
+      .catch(() => {
+        toast.error("Error updating / editing todo", {
+          position: "bottom-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Bounce,
+        });
       });
-      navigate("/");
-    })
-    .catch(() => {
-      toast.error("Error updating / editing todo", {
-        position: "bottom-right",
-        autoClose: 3000,
-        theme: "dark",
-        transition: Bounce,
-      });
-    });
-};
-
+  };
 
   const [sixtyPercentOfWindow, setSixtyPercentOfWindow] = useState(
     window.innerWidth * 0.6
@@ -207,11 +206,14 @@ function Update() {
             </Box>
             <div className="fab_container">
               <Tooltip title="Go Back To Home" placement="right-start">
-                <Link to="/">
-                  <Fab color="secondary">
-                    <ArrowBackIcon />
-                  </Fab>
-                </Link>
+                <Fab
+                  color="secondary"
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                >
+                  <ArrowBackIcon />
+                </Fab>
               </Tooltip>
             </div>
             <ToastContainer />

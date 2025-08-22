@@ -1,0 +1,25 @@
+.main_fullscreenTodoDiv {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;  /* safer */
+  width: 100vw;
+  background-color: #2273c4;
+  color: white;
+  flex-direction: column;
+  padding-left: 5px;
+  padding-top: 8px;
+}
+
+.px25 {
+    height: 25px;
+}
+
+.bottom_buttons {
+  position: absolute; /* or fixed if you want it stuck on screen */
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%); /* center horizontally */
+  background-color: #539ae0;
+  padding: 25px;
+  border-radius: 8px;
+}

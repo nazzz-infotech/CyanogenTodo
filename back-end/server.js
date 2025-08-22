@@ -23,7 +23,6 @@ const todoSchema = new mongoose.Schema({
   checked: { type: Boolean, default: false },
   date: { type: String, default: "None" },
   time: { type: String, default: "None" },
-  notifyingTimes: { type: Number, default: 0 },
 });
 
 const Todo = mongoose.model("Todo", todoSchema);
@@ -93,7 +92,8 @@ app.post("/createtestitem", async (req, res) => {
 // drop / delate all todos
 app.delete("/drop", async (req, res) => {
   try {
-    await mongoose.connection.db.dropDatabase();
+    // delete "todo" collection / document not drop all with subscription
+    await mongoose.connection.db.dropCollection("todos"); 
     res.status(201).json({ message: "Database drop successfully !!! " });
   } catch (error) {
     console.error(error);
@@ -313,12 +313,14 @@ let CheckTodosTimes = 0; // how many time it run
 setInterval(CheckTodos, 30 * 1000); // 30,000 ms = 30 seconds
 
 // send notification with a function
-async function sendNotification(title, body, badge) {
+async function sendNotification(title, body, icon, url, _id) {
   try {
     const payload = JSON.stringify({
       title: title,
       body: body,
-      badge: badge,
+      icon: icon,
+      url: url,
+      _id: _id,
     });
 
     const allSubs = await Subscription.find();
@@ -366,22 +368,6 @@ app.post("/testnotification", async (req, res) => {
  * Check the todo after 30 seconds
  */
 
-// change the todo
-async function changeTodoNotifyingTimes(_id) {
-  try {
-    const existing_value = await Todo.findById(_id);
-    const new_value = (existing_value.notifyingTimes=+1);
-    await Todo.findByIdAndUpdate(
-      _id,
-      { notifyingTimes: new_value },
-      { new: true }
-    );
-    return "Todo notifyingTimes changed";
-  } catch (error) {
-    return `Error in todo notifyingTimes changing. ${error}`;
-  }
-}
-
 // it will return boolean
 // returns object but still works for boolean checks
 function isWithinRange(dateTimeStr, minMinutes, maxMinutes) {
@@ -412,63 +398,94 @@ function isWithinRange(dateTimeStr, minMinutes, maxMinutes) {
   };
 }
 
+/**
+ * Use the local IP address / forwarded address. By default it is localhost.
+ * Port is important.
+ * **Note -->** [ *If you're using the port forwarding services like ngrok, localtunnel or vs code port forwarding etc.
+ * use the port 80 with it also use the useSecure = true with these like services* ]
+ */
+
+const frontendUrl = (address, port, isSecure = false) => {
+  const scheme = isSecure ? "https" : "http";
+
+  let portPart = "";
+
+  if (port === 80) {
+    portPart = "";
+  } else {
+    portPart = `:${port}`;
+  }
+
+  return `${scheme}://${address}${portPart}`;
+};
+
+const frontendAddress = "096a7901cba8b43af8c6d9f26d319eb1.serveo.net"; // use the localhost instead for development
+const frontendPort = 80; // use the frontendPort instead for development
+
 async function CheckTodos() {
   const todos = await Todo.find();
   CheckTodosTimes++;
   console.log(`CheckTodos run #${CheckTodosTimes}`);
-
-  // clear the all logs after 250 run of CheckTodos
-  if (CheckTodosTimes === 250) {
-    console.clear();
-  }
 
   todos.map(async (todo) => {
     const dateTime = `${todo.date} ${todo.time}`;
 
     if (todo.checked) return; // skip completed tasks
 
-    // 1 hr
-    const hrCheck = isWithinRange(dateTime, 55, 60);
-    if (hrCheck.inRange && todo.notifyingTimes < 1) {
-      await sendNotification(
-        `${todo.title} - 1 hour remaining`,
-        `You have about 1 hour left to complete ${todo.title}.`,
-        "./1hr.png"
-      );
-      await changeTodoNotifyingTimes(todo._id);
-    }
+    /**  run this twice times */
+    for (let i = 0; i < 2; i++) {
+      // 1 hr
+      const hrCheck = isWithinRange(dateTime, 55, 60);
+      if (hrCheck.inRange) {
+        await sendNotification(
+          `${todo.title} - 1 hour remaining`,
+          `You have about 1 hour left to complete ${todo.title}.`,
+          "./1hr.png",
 
-    // 30 min
-    const min30Check = isWithinRange(dateTime, 25, 30);
-    if (min30Check.inRange && todo.notifyingTimes < 2) {
-      await sendNotification(
-        `${todo.title} - 30 minutes remaining`,
-        `You have about 30 minutes left to complete ${todo.title}.`,
-        "./30min.png"
-      );
-      await changeTodoNotifyingTimes(todo._id);
-    }
+          `${frontendUrl(frontendAddress, frontendPort, true)}/todofullscreen/${
+            todo._id
+          }`
+        );
+      }
 
-    // 15 min
-    const min15Check = isWithinRange(dateTime, 10, 15);
-    if (min15Check.inRange && todo.notifyingTimes < 3) {
-      await sendNotification(
-        `Hurry! 15 minutes left for ${todo.title}`,
-        `Only about 15 minutes remaining to finish ${todo.title}.`,
-        "./15min.png"
-      );
-      await changeTodoNotifyingTimes(todo._id);
-    }
+      // 30 min
+      const min30Check = isWithinRange(dateTime, 25, 30);
+      if (min30Check.inRange) {
+        await sendNotification(
+          `${todo.title} - 30 minutes remaining`,
+          `You have about 30 minutes left to complete ${todo.title}.`,
+          "./30min.png",
+          `${frontendUrl(frontendAddress, frontendPort, true)}/todofullscreen/${
+            todo._id
+          }`
+        );
+      }
 
-    // 5 min
-    const min5Check = isWithinRange(dateTime, 0, 5);
-    if (min5Check.inRange && todo.notifyingTimes < 4) {
-      await sendNotification(
-        `Hey, Hurry! 5 minutes left for ${todo.title}`,
-        `There's only about 5 minutes remaining to finish ${todo.title}.`,
-        "./5min.png"
-      );
-      await changeTodoNotifyingTimes(todo._id);
+      // 15 min
+      const min15Check = isWithinRange(dateTime, 10, 15);
+      if (min15Check.inRange) {
+        await sendNotification(
+          `Hurry! 15 minutes left for ${todo.title}`,
+          `Only about 15 minutes remaining to finish ${todo.title}.`,
+          "./15min.png",
+          `${frontendUrl(frontendAddress, frontendPort, true)}/todofullscreen/${
+            todo._id
+          }`
+        );
+      }
+
+      // 5 min
+      const min5Check = isWithinRange(dateTime, 0, 5);
+      if (min5Check.inRange) {
+        await sendNotification(
+          `Hey, Hurry! 5 minutes left for ${todo.title}`,
+          `There's only about 5 minutes remaining to finish ${todo.title}.`,
+          "./5min.png",
+          `${frontendUrl(frontendAddress, frontendPort, true)}/todofullscreen/${
+            todo._id
+          }`
+        );
+      }
     }
   });
 }

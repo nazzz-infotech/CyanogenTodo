@@ -58,7 +58,6 @@ import { ThemeProvider } from "@emotion/react";
 
 // Import Link component from react-router-dom for navigation.
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
 /**
  * @component Home
@@ -210,28 +209,35 @@ function Home() {
    * @param {string} id - The unique identifier of the todo to delete.
    */
   const deleteSingleTodo = async (id) => {
-    // Optimistically update the UI by removing the todo from the list.
-    await setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
-    // Call the API to delete the todo from the database.
-    deleteTodo(id)
-      .then(() => {
-        fetchTodos(); // Re-fetch to ensure consistency.
-        toast.success("Todo Deleted Successfully", {
-          position: "bottom-right",
-          autoClose: 1000,
-          theme: "dark",
-          transition: Bounce,
+    // conformation for delete the todo
+    let isConformed = confirm("You are really want to delete this todo ?");
+    if (isConformed) {
+      // Optimistically update the UI by removing the todo from the list.
+      await setTodos((prevTodos) =>
+        prevTodos.filter((todo) => todo._id !== id)
+      );
+      // Call the API to delete the todo from the database.
+
+      deleteTodo(id)
+        .then(() => {
+          fetchTodos(); // Re-fetch to ensure consistency.
+          toast.success("Todo Deleted Successfully", {
+            position: "bottom-right",
+            autoClose: 1000,
+            theme: "dark",
+            transition: Bounce,
+          });
+        })
+        .catch(() => {
+          fetchTodos(); // Re-fetch to revert optimistic update on error.
+          toast.error("Error Deleting Todo", {
+            position: "bottom-right",
+            autoClose: 3000,
+            theme: "dark",
+            transition: Bounce,
+          });
         });
-      })
-      .catch(() => {
-        fetchTodos(); // Re-fetch to revert optimistic update on error.
-        toast.error("Error Deleting Todo", {
-          position: "bottom-right",
-          autoClose: 3000,
-          theme: "dark",
-          transition: Bounce,
-        });
-      });
+    }
   };
 
   /**

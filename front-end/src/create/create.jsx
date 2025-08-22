@@ -28,6 +28,9 @@ function Create() {
   const [isBackToHome, setBackToHome] = useState(false); // is back to home after todo creation (not for adding to database)
   const [isTimeAndDate, setTimeAndDate] = useState(false); // use the time and date if needed
   const [pickerDateAndTime, setDateAndTime] = useState(dayjs()); // time (get the current time)
+  const [sixtyPercentOfWindow, setSixtyPercentOfWindow] = useState(
+    window.innerWidth * 0.6
+  ); // get the 60% width of window
 
   //value handling functions
   const handleTitleChange = (event) => {
@@ -92,10 +95,6 @@ function Create() {
         });
       });
   };
-
-  const [sixtyPercentOfWindow, setSixtyPercentOfWindow] = useState(
-    window.innerWidth * 0.6
-  ); // get the 60% width of window
 
   useEffect(() => {
     function updateWidth() {

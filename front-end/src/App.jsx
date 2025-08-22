@@ -3,6 +3,7 @@ import Home from "./Home/home";
 import Create from "./create/create";
 import Update from "./update/update";
 import { Routes, Route } from "react-router-dom";
+import TodoFullscreen from "./todoFullscreen/todoFullscreen";
 
 function App() {
   return (
@@ -24,11 +25,13 @@ function App() {
           content="black-translucent"
         />
       </Helmet>
-      
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/create" element={<Create />} />
         <Route path="/update/:id" element={<Update />} />
+        <Route path="/todofullscreen" element={<TodoFullscreen />} />
+        <Route path="/todofullscreen/:id" element={<TodoFullscreen />} />
       </Routes>
     </>
   );

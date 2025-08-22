@@ -6,25 +6,60 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data.json();
   } catch {
-    data = { title: "Default title", body: "Default body" };
+    data = { 
+      title: "Default title", 
+      body: "Default body", 
+      url: "/", 
+      id: null, 
+      icon: "/icon.png" 
+    };
   }
 
   event.waitUntil(
     self.registration.showNotification(data.title || "Notification", {
       body: data.body || "No body text",
-      icon: "/icon.png",
+      icon: data.icon || "/icon.png",
+      data: {    
+        url: data.url || "/",  
+        id: data.id || null    
+      },
+      actions: [
+        { action: "open", title: "Open" },      // ✅ custom button
+        { action: "dismiss", title: "Dismiss" } // ✅ custom button
+      ]
     })
   );
 });
 
-// Handle clicks on the notification
+// --- Handle clicks on the notification (and buttons) ---
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+
+  const { url, id } = event.notification.data;
+  console.log("Notification clicked, ID:", id, "Action:", event.action);
+
+  if (event.action === "dismiss") return;
+
+  let targetUrl = url;
+
+  // If URL doesn’t start with http(s), prepend origin (includes port in dev)
+  if (url && !/^https?:\/\//i.test(url)) {
+    targetUrl = self.location.origin + url;
+  }
+
   event.waitUntil(
-    clients.openWindow("/") // Opens your app when notification is clicked
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      for (let client of windowClients) {
+        if (client.url.includes(targetUrl) && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
   );
 });
-
 // --- PWA Lifecycle Events ---
 self.addEventListener("install", (event) => {
   console.log("Service Worker installed");
@@ -36,6 +71,6 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Let network requests go through (you can add caching later if you want)
+  // Simple passthrough (you can add caching here later)
   event.respondWith(fetch(event.request));
 });
